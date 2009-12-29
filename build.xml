@@ -127,7 +127,7 @@ public class Main {
     description="Create Javadoc API documentation.">
     <mkdir dir="${docs.home}/api"/>
     <javadoc sourcepath="${src.home}" destdir="${docs.home}/api"
-      packagenames="*">
+      packagenames="*" linksource="yes">
       <classpath refid="compile.classpath"/>
     </javadoc>
   </target>
