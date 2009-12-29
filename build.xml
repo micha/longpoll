@@ -6,7 +6,7 @@
   <!-- BEGIN CONFIGURATION HERE -->
   <property name="vendor.namespace"       value="com.thinkminimo"/>
   <property name="vendor.namespacedir"    value="com/thinkminimo"/>
-  <property name="app.name"               value="jtemplate"/>
+  <property name="app.name"               value="hello"/>
   <property name="app.version"            value="0.1"/>
   <property name="app.release"            value="dev"/>
   <property name="app.compile.source"     value="1.6"/>
@@ -134,15 +134,6 @@ public class Main {
       packagenames="*">
       <classpath refid="compile.classpath"/>
     </javadoc>
-  </target>
-
-  <target name="dist" depends="jar,javadoc"
-    description="Create binary distribution.">
-    <zip destfile="${dist.home}/${app.fullname}.zip">
-      <zipfileset file="${jarfile.dist}"    prefix="${app.fullname}"/>
-      <zipfileset  dir="${docs.home}"       prefix="${app.fullname}/docs"
-              excludes="api/**"/>
-    </zip>
   </target>
 
   <target name="dist" depends="jar"
