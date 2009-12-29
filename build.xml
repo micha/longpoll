@@ -63,6 +63,7 @@
     <mkdir dir="${lib.home}"/>
     <mkdir dir="${resources.home}"/>
     <mkdir dir="${docs.home}"/>
+    <mkdir dir="${dist.home}"/>
     <mkdir dir="${src.home}/${vendor.namespacedir}/${app.name}"/>
 <echo file="${src.home}/${vendor.namespacedir}/${app.name}/Main.java"
   append="no">package ${vendor.namespace}.${app.name};
