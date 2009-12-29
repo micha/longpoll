@@ -1,5 +1,8 @@
 <project name="jtemplate" default="all" basedir=".">
 
+  <!-- load environment variables into the 'env' property -->
+  <property environment="env"/>
+
   <!-- BEGIN CONFIGURATION HERE -->
   <property name="vendor.namespace"       value="com.thinkminimo"/>
   <property name="vendor.namespacedir"    value="com/thinkminimo"/>
@@ -27,7 +30,7 @@
 
   <property name="jarfile.dist"     value="${dist.home}/${app.fullname}.jar"/>
   <property name="zipfile.dist"     value="${dist.home}/${app.fullname}.zip"/>
-  <property name="startscript.dist" value="${app.name}-start.sh"/>
+  <property name="startscript.dist" value="${dist.home}/${app.name}"/>
 
   <property name="compile.debug"        value="true"/>
   <property name="compile.deprecation"  value="true"/>
@@ -140,6 +143,28 @@ public class Main {
       <zipfileset  dir="${docs.home}"       prefix="${app.fullname}/docs"
               excludes="api/**"/>
     </zip>
+  </target>
+
+  <target name="dist" depends="jar"
+    description="Create binary distribution.">
+<echo file="${startscript.dist}">#!/usr/bin/env bash
+java -jar "$(dirname "$0")/${app.fullname}.jar" "$@"
+</echo>
+    <chmod file="${startscript.dist}" perm="ugo+rx"/>
+    <zip destfile="${zipfile.dist}">
+      <zipfileset file="${jarfile.dist}"/>
+      <zipfileset file="${startscript.dist}" filemode="755"/>
+    </zip>
+  </target>
+
+  <target name="install" depends="dist">
+    <input defaultvalue="${env.HOME}/bin" 
+      addproperty="get.installdir"
+      message="Install dir?"/>
+    <unzip src="${zipfile.dist}" dest="${dist.home}"/>
+    <chmod file="${startscript.dist}" perm="755"/>
+    <move file="${jarfile.dist}" todir="${get.installdir}"/>
+    <move file="${startscript.dist}" todir="${get.installdir}"/>
   </target>
 
 </project>
