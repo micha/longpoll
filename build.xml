@@ -74,10 +74,6 @@ public class Main {
   }
 }
 </echo>
-<echo file="${startscript.dist}" append="no">#\!/usr/bin/env bash
-  java -jar dist/${app.fullname}.jar "$@"
-</echo>
-    <chmod file="${startscript.dist}" perm="755"/>
     <delete dir=".git"/>
     <delete file="README.markdown"/>
     <touch file=".init"/>
