@@ -1,20 +1,26 @@
 <project name="jtemplate" default="all" basedir=".">
 
-  <!-- load environment variables into the 'env' property -->
-  <property environment="env"/>
-
   <!-- BEGIN CONFIGURATION HERE -->
   <property name="vendor.namespace"       value="com.thinkminimo"/>
   <property name="vendor.namespacedir"    value="com/thinkminimo"/>
   <property name="app.name"               value="jtemplate"/>
-  <property name="app.version"            value="0.1"/>
+  <property name="app.version.in"         value="0.1"/>
   <property name="app.release"            value="dev"/>
   <property name="app.compile.source"     value="1.6"/>
   <property name="app.compile.target"     value="1.6"/>
   <!-- END CONFIGURATION HERE   -->
 
+  <!-- load environment variables into the 'env' property -->
+  <property environment="env"/>
+
   <!-- set remaining properties -->
-  <property name="app.fullversion"  value="${app.version}-${app.release}"/>
+  <condition property="app.version" value="${app.version.in}" else="0.0">
+    <length string="${app.version.in}" trim="true" when="greater" length="0"/>
+  </condition>
+  <condition property="app.fullversion" 
+    value="${app.version}-${app.release}" else="${app.version}">
+    <length string="${app.release}" trim="true" when="greater" length="0"/>
+  </condition>
 
   <property name="app.base"         value="${vendor.namespace}.${app.name}"/>
   <property name="app.fullname"     value="${app.name}-${app.fullversion}"/>
@@ -28,6 +34,7 @@
   <property name="ant-contrib.home" value="${basedir}/ant/contrib"/>
   <property name="ant-scripts.home" value="${basedir}/ant/scripts"/>
 
+  <property name="appversion.dist"  value="${dist.home}/.version"/>
   <property name="jarfile.dist"     value="${dist.home}/${app.fullname}.jar"/>
   <property name="zipfile.dist"     value="${dist.home}/${app.fullname}.zip"/>
   <property name="startscript.dist" value="${dist.home}/${app.name}"/>
@@ -56,7 +63,13 @@
 
   <!-- the rest of this file is target definitions -->
 
-  <target name="all" depends="jar" description="Same as 'dist'."/>
+  <!-- jtemplate testing only
+  <target name="test">
+    <echo>${app.fullversion}</echo>
+  </target>
+  -->
+
+  <target name="all" depends="install" description="Same as 'install'."/>
 
   <target name="init" description="Initial project configuration."
     unless="alread_did_init">
@@ -137,6 +150,7 @@ public class Main {
 <echo file="${startscript.dist}">#!/usr/bin/env bash
 java -jar "$(dirname "$0")/${app.fullname}.jar" "$@"
 </echo>
+    <echo file="${appversion.dist}">${app.fullversion}</echo>
     <chmod file="${startscript.dist}" perm="ugo+rx"/>
     <zip destfile="${zipfile.dist}">
       <zipfileset file="${jarfile.dist}"/>
