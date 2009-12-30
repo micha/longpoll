@@ -34,7 +34,7 @@
   <property name="ant-contrib.home" value="${basedir}/ant/contrib"/>
   <property name="ant-scripts.home" value="${basedir}/ant/scripts"/>
 
-  <property name="appversion.dist"  value="${resources.home}/.version"/>
+  <property name="appversion.dist"  value="${resources.home}/version"/>
   <property name="jarfile.dist"     value="${dist.home}/${app.fullname}.jar"/>
   <property name="zipfile.dist"     value="${dist.home}/${app.fullname}.zip"/>
   <property name="startscript.dist" value="${dist.home}/${app.name}"/>
@@ -150,8 +150,8 @@ public class Main {
 <echo file="${startscript.dist}">#!/usr/bin/env bash
 java -jar "$(dirname "$0")/${app.fullname}.jar" "$@"
 </echo>
-    <echo file="${appversion.dist}">${app.fullversion}</echo>
     <chmod file="${startscript.dist}" perm="ugo+rx"/>
+    <echo file="${appversion.dist}">${app.fullversion}</echo>
     <zip destfile="${zipfile.dist}">
       <zipfileset file="${jarfile.dist}"/>
       <zipfileset file="${startscript.dist}" filemode="755"/>
