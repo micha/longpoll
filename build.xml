@@ -34,7 +34,7 @@
   <property name="ant-contrib.home" value="${basedir}/ant/contrib"/>
   <property name="ant-scripts.home" value="${basedir}/ant/scripts"/>
 
-  <property name="appversion.dist"  value="${dist.home}/.version"/>
+  <property name="appversion.dist"  value="${resources.home}/.version"/>
   <property name="jarfile.dist"     value="${dist.home}/${app.fullname}.jar"/>
   <property name="zipfile.dist"     value="${dist.home}/${app.fullname}.zip"/>
   <property name="startscript.dist" value="${dist.home}/${app.name}"/>
