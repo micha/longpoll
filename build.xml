@@ -1,0 +1,171 @@
+<project name="jtemplate" default="all" basedir=".">
+
+  <!-- BEGIN CONFIGURATION HERE -->
+  <property name="vendor.namespace"       value="com.thinkminimo"/>
+  <property name="vendor.namespacedir"    value="com/thinkminimo"/>
+  <property name="app.name"               value="jtemplate"/>
+  <property name="app.version.in"         value="0.1"/>
+  <property name="app.release"            value="dev"/>
+  <property name="app.compile.source"     value="1.6"/>
+  <property name="app.compile.target"     value="1.6"/>
+  <!-- END CONFIGURATION HERE   -->
+
+  <!-- load environment variables into the 'env' property -->
+  <property environment="env"/>
+
+  <!-- set remaining properties -->
+  <condition property="app.version" value="${app.version.in}" else="0.0">
+    <length string="${app.version.in}" trim="true" when="greater" length="0"/>
+  </condition>
+  <condition property="app.fullversion" 
+    value="${app.version}-${app.release}" else="${app.version}">
+    <length string="${app.release}" trim="true" when="greater" length="0"/>
+  </condition>
+
+  <property name="app.base"         value="${vendor.namespace}.${app.name}"/>
+  <property name="app.fullname"     value="${app.name}-${app.fullversion}"/>
+
+  <property name="build.home"       value="${basedir}/build"/>
+  <property name="dist.home"        value="${basedir}/dist"/>
+  <property name="docs.home"        value="${basedir}/docs"/>
+  <property name="src.home"         value="${basedir}/src"/>
+  <property name="lib.home"         value="${basedir}/lib"/>
+  <property name="resources.home"   value="${basedir}/resources"/>
+  <property name="ant-contrib.home" value="${basedir}/ant/contrib"/>
+  <property name="ant-scripts.home" value="${basedir}/ant/scripts"/>
+
+  <property name="appversion.dist"  value="${resources.home}/version"/>
+  <property name="jarfile.dist"     value="${dist.home}/${app.fullname}.jar"/>
+  <property name="zipfile.dist"     value="${dist.home}/${app.fullname}.zip"/>
+  <property name="startscript.dist" value="${dist.home}/${app.name}"/>
+
+  <property name="compile.debug"        value="true"/>
+  <property name="compile.deprecation"  value="true"/>
+  <property name="compile.mainclass"    value="${app.base}.Main"/>
+  <property name="compile.source"    value="${app.compile.source}"/>
+  <property name="compile.target"    value="${app.compile.target}"/>
+
+  <!-- detect java version -->
+  <available property="jdk1.3+"         classname="java.lang.StrictMath"/>
+  <available property="jdk1.4+"         classname="java.lang.CharSequence"/>
+  <available property="jdk1.5+"         classname="java.lang.Readable"/>
+
+  <!-- set classpath for compiling project -->
+  <path id="compile.classpath">
+    <pathelement path="${src.home}"/>
+    <fileset dir="${lib.home}" includes="*.jar"/>
+  </path>
+
+  <!-- if we already did init we don't want to accidentally do it again -->
+  <condition property="alread_did_init">
+    <available file=".init"/>
+  </condition>
+
+  <!-- the rest of this file is target definitions -->
+
+  <!-- jtemplate testing only
+  <target name="test">
+    <echo>${app.fullversion}</echo>
+  </target>
+  -->
+
+  <target name="all" depends="install" description="Same as 'install'."/>
+
+  <target name="init" description="Initial project configuration."
+    unless="alread_did_init">
+    <mkdir dir="${lib.home}"/>
+    <mkdir dir="${resources.home}"/>
+    <mkdir dir="${docs.home}"/>
+    <mkdir dir="${src.home}/${vendor.namespacedir}/${app.name}"/>
+<echo file="${src.home}/${vendor.namespacedir}/${app.name}/Main.java"
+  append="no">package ${vendor.namespace}.${app.name};
+
+public class Main {
+  public static void main(String[] args) {
+    System.out.println("${app.name} says hi!");
+  }
+}
+</echo>
+    <delete dir=".git"/>
+    <delete file="README.markdown"/>
+    <touch file=".init"/>
+  </target>
+
+  <target name="clean" 
+    description="Remove compiled project, javadocs, and jar files.">
+    <delete dir="${build.home}"/>
+    <delete dir="${dist.home}"/>
+    <delete dir="${docs.home}/api"/>
+  </target>
+
+  <target name="prepare" description="Create necessary directories.">
+    <!-- Create build directories as needed -->
+    <mkdir  dir="${build.home}"/>
+    <mkdir  dir="${dist.home}"/>
+  </target>
+
+  <target name="compile" depends="prepare"
+    description="Compile Java source files.">
+    <!-- Compile Java classes as necessary -->
+    <javac  srcdir="${src.home}"
+      destdir="${build.home}"
+      debug="${compile.debug}"
+      deprecation="${compile.deprecation}"
+      source="${compile.source}"
+      target="${compile.target}"
+      classpathref="compile.classpath">
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" 
+    description="Create jar file.">
+    <!-- Create application JAR file -->
+    <jar jarfile="${jarfile.dist}"
+      basedir="${build.home}"
+      index="true">
+      <manifest>
+        <attribute name="Built-By"               value="${user.name}"/>
+        <attribute name="Implementation-Vendor"  value="${app.vendor}"/>
+        <attribute name="Implementation-Title"   value="${app.base}"/>
+        <attribute name="Implementation-Version" value="${app.version}"/>
+        <attribute name="Main-Class"             value="${compile.mainclass}"/>
+      </manifest>
+      <fileset          dir="${build.home}"/>
+      <fileset          dir="${resources.home}"/>
+      <zipgroupfileset  dir="${lib.home}"/>
+    </jar>
+  </target>
+
+  <target name="javadoc" depends="compile" 
+    description="Create Javadoc API documentation.">
+    <mkdir dir="${docs.home}/api"/>
+    <javadoc sourcepath="${src.home}" destdir="${docs.home}/api"
+      packagenames="*" linksource="yes">
+      <classpath refid="compile.classpath"/>
+    </javadoc>
+  </target>
+
+  <target name="dist" depends="jar"
+    description="Create binary distribution.">
+<echo file="${startscript.dist}">#!/usr/bin/env bash
+java -jar "$(dirname "$0")/${app.fullname}.jar" "$@"
+</echo>
+    <chmod file="${startscript.dist}" perm="ugo+rx"/>
+    <echo file="${appversion.dist}">${app.fullversion}</echo>
+    <zip destfile="${zipfile.dist}">
+      <zipfileset file="${jarfile.dist}"/>
+      <zipfileset file="${startscript.dist}" filemode="755"/>
+    </zip>
+  </target>
+
+  <target name="install" depends="dist">
+    <input defaultvalue="${env.HOME}/bin" 
+      addproperty="get.installdir"
+      message="Install dir?"/>
+    <unzip src="${zipfile.dist}" dest="${dist.home}"/>
+    <chmod file="${startscript.dist}" perm="755"/>
+    <move file="${jarfile.dist}" todir="${get.installdir}"/>
+    <move file="${startscript.dist}" todir="${get.installdir}"/>
+  </target>
+
+</project>
