@@ -82,6 +82,8 @@ public class Main {
     }
   }
 
+  private int id = 0;
+
   public Main(String host, int port) {
     try {
       Client c = new Client(host, port);
@@ -90,15 +92,27 @@ public class Main {
       while (c.isConnected) {
         String s = c.in.poll();
         if (s != null) {
-          System.out.print(s);
-          System.out.print("> ");
-          c.out.add((new BufferedReader(
-                  new InputStreamReader(System.in))).readLine()+"\r\n");
+          do {
+            System.out.print(s);
+          } while ((s = c.in.poll()) != null);
+          String id = next();
+          System.out.print("> "+id+" ");
+          String cmd = 
+            (new BufferedReader(new InputStreamReader(System.in))).readLine();
+          c.out.add(id+" "+(cmd.length() > 0 ? cmd : "NOOP")+"\r\n");
         }
       }
     } catch (Exception e) {
       System.err.println("http2imap: " + e);
     }
+  }
+
+  private String next() {
+    id++;
+    String fmt = "000";
+    int mod = Integer.parseInt("1"+fmt);
+    String ret = fmt + String.valueOf(id % mod);
+    return "A"+ret.substring(ret.length() - fmt.length());
   }
 
   public static void main(String[] args) {
