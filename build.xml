@@ -36,6 +36,7 @@
 
   <property name="appversion.dist"  value="${resources.home}/version"/>
   <property name="jarfile.dist"     value="${dist.home}/${app.fullname}.jar"/>
+  <property name="warfile.dist"     value="${dist.home}/${app.fullname}.war"/>
   <property name="zipfile.dist"     value="${dist.home}/${app.fullname}.zip"/>
   <property name="startscript.dist" value="${dist.home}/${app.name}"/>
 
@@ -166,4 +167,10 @@ java -jar "$(dirname "$0")/${app.fullname}.jar" "$@"
     <move file="${startscript.dist}" todir="${get.installdir}"/>
   </target>
 
+  <target name="war" description="Create war file." depends="compile">
+    <war destfile="${warfile.dist}" webxml="web.xml">
+      <lib dir="${lib.home}"/>
+      <classes dir="${build.home}"/>
+    </war>
+  </target>
 </project>
