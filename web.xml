@@ -4,16 +4,16 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
   version="2.4">
 
-  <display-name>Http2Imap</display-name>
-  <description>HTTP long-polling comet gateway to IMAP servers.</description>
+  <display-name>LongPoll</display-name>
+  <description>HTTP long-polling comet gateway to asynchronous socket communication.</description>
 
   <servlet>
-    <servlet-name>Http2Imap</servlet-name>
-    <servlet-class>com.thinkminimo.http2imap.Http2ImapServlet</servlet-class>
+    <servlet-name>LongPoll</servlet-name>
+    <servlet-class>com.thinkminimo.comet.LongPollServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>Http2Imap</servlet-name>
+    <servlet-name>LongPoll</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 

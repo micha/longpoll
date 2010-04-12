@@ -1,4 +1,4 @@
-package com.thinkminimo.http2imap;
+package com.thinkminimo.comet;
 
 import java.io.*;
 import java.net.*;
@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-public class Http2ImapServlet extends HttpServlet {
+public class LongPollServlet extends HttpServlet {
 
   public static final String ATTR_CLIENTS = "clients";
   
